@@ -10,10 +10,12 @@ require 'norikra/suspended_query'
 require 'norikra/logger'
 include Norikra::Log
 
-require 'esper-5.2.0.jar'
-require 'esper/lib/commons-logging-1.1.3.jar'
-require 'esper/lib/antlr-runtime-4.1.jar'
-require 'esper/lib/cglib-nodep-3.1.jar'
+require 'esper-7.1.0.jar'
+require 'esperio-springjms/lib/commons-logging-1.1.3.jar'
+require 'esper/lib/antlr-runtime-4.7.jar'
+require 'esper/lib/cglib-nodep-3.2.5jar'
+require 'esper/lib/janino-3.0.7.jar'
+require 'esper/lib/commons-compiler-3.0.7.jar'
 
 require 'norikra/typedef_manager'
 
