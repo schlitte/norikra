@@ -1,8 +1,8 @@
 require 'java'
-require 'esper-5.2.0.jar'
-require 'esper/lib/commons-logging-1.1.3.jar'
-require 'esper/lib/antlr-runtime-4.1.jar'
-require 'esper/lib/cglib-nodep-3.1.jar'
+require 'esper-7.1.0.jar'
+require 'esperio-springjms/lib/commons-logging-1.1.3.jar'
+require 'esper/lib/antlr-runtime-4.7.jar'
+require 'esper/lib/cglib-nodep-3.2.5.jar'
 
 require 'norikra/error'
 require 'norikra/query/ast'
@@ -225,15 +225,23 @@ module Norikra
       ast = result.tree
 
       services = Java::ComEspertechEsperClient::EPServiceProviderManager.getDefaultProvider.getServicesContext
-
+       
+      t = nil
+      case services.getConfigSnapshot.getEngineDefaults.getStreamSelection.getDefaultStreamSelector.to_s
+        when "ISTREAM_ONLY"
+          t = Java::ComEspertechEsperEplSpec::SelectClauseStreamSelectorEnum::ISTREAM_ONLY
+        when "RSTREAM_ONLY"
+          t = Java::ComEspertechEsperEplSpec::SelectClauseStreamSelectorEnum::RSTREAM_ONLY
+        when "RSTREAM_ISTREAM_BOTH"
+          t = Java::ComEspertechEsperEplSpec::SelectClauseStreamSelectorEnum::RSTREAM_ISTREAM_BOTH        
+      end
+      
+      
       walker = Java::ComEspertechEsperEplParse::EPLTreeWalkerListener.new(
         result.getTokenStream,
         services.getEngineImportService,
         services.getVariableService,
-        services.getSchedulingService,
-        Java::ComEspertechEsperEplSpec::SelectClauseStreamSelectorEnum.mapFromSODA(
-          services.getConfigSnapshot.getEngineDefaults.getStreamSelection.getDefaultStreamSelector
-        ),
+        t,
         services.getEngineURI,
         services.getConfigSnapshot,
         services.getPatternNodeFactory,
