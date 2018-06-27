@@ -1406,7 +1406,7 @@ module Norikra
       #               ["secondPart", ["numberconstant", ["number", "20"]], "sec"]]]]],
       #       ")"]]]],
 
-      NON_ALIAS_NODES = ['eventFilterExpression','viewExpression','.','unidirectional','retain-union','retain-intersection']
+      NON_ALIAS_NODES = ['eventFilterExpression','viewExpression','viewExpressions','.','unidirectional','retain-union','retain-intersection']
 
       def targets
         [ self.find('eventFilterExpression').find('classIdentifier').find('escapableStr').child.name ]
@@ -1416,7 +1416,9 @@ module Norikra
         alias_nodes = children.select{|n| not NON_ALIAS_NODES.include?(n.name) }
         if alias_nodes.size == 2
           if alias_nodes[0].name =~ /^as$/i
-            [ [ alias_nodes[1].name, self.targets.first ] ]
+            s = alias_nodes[1].name
+            s = alias_nodes[1].child.name if s == "identOrTicked"
+            [ [ s, self.targets.first ] ]
           else
             raise "unexpected FROM clause (non-AS for alias pattern): #{alias_nodes.map(&:name).join(',')}"
           end
