@@ -1,8 +1,8 @@
 require 'java'
-require 'esper-5.2.0.jar'
-require 'esper/lib/commons-logging-1.1.3.jar'
-require 'esper/lib/antlr-runtime-4.1.jar'
-require 'esper/lib/cglib-nodep-3.1.jar'
+require 'esper-7.1.0.jar'
+require 'esperio-springjms/lib/commons-logging-1.1.3.jar'
+require 'esper/lib/antlr-runtime-4.7.jar'
+require 'esper/lib/cglib-nodep-3.2.5.jar'
 
 require 'rubygems'
 
