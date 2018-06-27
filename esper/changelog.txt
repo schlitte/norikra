@@ -1,6 +1,198 @@
 Esper Changelog
 ===================
 
+Changes in version 7.1.0
+------------------------
+  - Bug fix release with no significant new functionality
+  - Fixed issue SNU-737-77471 Byte code generation for filter boolean expressions can take place at runtime and degrade performance
+  - Fixed issue VYZ-3431-6686 JMSOutputAdapter ClassCastException when HA enabled
+  - Fixed issue CPY-657-70575 FromClause-model produces an extra 'outer'ù in "toEPL" for joins
+  - Fixed issue KEC-614-81453 An exception thrown when evaluating rhs for variable-set does not invoke exception handler
+  - Fixed issue #99 Returning a list from an expression declaration using Case Control Flow with multiple conditions
+  - Fixed issue ZTB-991-52280 Deployment API fails compile for script expression returning array
+  - Fixed issue AYG-126-66992 Improve named window dispatches to reduce contention
+  - Many other improvements across the code and documentation that are not explicitly listed above   
+
+Changes in version 7.0.0
+------------------------
+  - Janino is now a compile-time dependency. At runtime Janino is required by default; Janino is not required when byte code generation is disabled in the configuration.
+  - The following dependent jar files are upgraded:
+    - ANTLR runtime library version is now 4.7 (antlr-runtime-4.7.jar, previously antlr-runtime-4.5.3.jar)
+    - CGLIB version is now 3.2.5 (cglib-nodep-3.2.5.jar, previously cglib-nodep-3.2.4.jar)
+    - SLF4J is now 1.7.25 (slf4j-api-1.7.25.jar, optionally use with Log4J by adding slf4j-log4j12-1.7.25.jar, previously at slf4j-api-1.7.21.jar)
+  - Byte code generation ... generates byte code for all of result set processing, aggregation, having-clause, order-by and any interdependent expressions
+  - Support for keyed contexts to have initiated-by and terminated-by
+  - Support for obtaining context properties from context admin API
+  - Support for registering listeners that receive context- and context-partition related activity
+  - Support for on-merge to insert a new row without the need for a where-clause or match-clause
+   
+API or EPL Changes:
+  - Event property types are boxed types except when the event type is a Java class and the property type is a primitive type. Expressions return boxed types.
+  - In "create schema" when using "copyfrom" the copied properties are now always first and explicitly-listed properties are added last, in respect to property order.
+  - The "groupwin" grouped window specification is now only allowed once per stream. In previous releases, in queries without more than one data window, it could be used multiple times.
+  - In output-rate-limiting, the "enable_outputlimit_opt" hint is now the default behavior, resulting in output-rate-limiting needing less memory for most cases
+    
+Bug fixes
+  - Fixed issue LGT-873-30098 Groupwin produces null-results for expression batch window without groups
+  - Fixed issue KUL-860-35888 Script expression taking subquery result as parameter throws NPE  
+  - Fixed issue #93 audit for in-expression with open/closed range has incorrect text
+  - Fixed issue PIM-661-90074 propertyexception occurs with nestedcontext when initiatedby-event selected  
+  - Fixed issue EDK-438-50100 NPE in get-context-partitions for 3-lvl context
+  - Fixed issue GQR-172-75175 Stack overflow processing filters
+  - Fixed issue JPT-362-46168 Enumeration method on match-recognize measures-clause matches returns invalid results
+  - Fixed issue QXJ-283-37230 Create-schema 'copyfrom' results in property order that is incompatible with object-array underlying
+  - Fixed issue UFD-602-37122 Chained max-enumeration-method results in validation exception
+  - Fixed issue MNO-830-58619-0 Lastever and firstever aggregation functions with wildcard incorrect property type
+  - Fixed issue MNO-830-58619-1 NPE validating union enumeration method
+  - Fixed issue MNO-830-58619-3 Min-function with datetime method throws parse exception  
+  - Fixed issue FNP-470-45830 Backtick to escape stream name throws unrecognized
+  - Fixed issue SMC-627-22819 Method join parameterized by streams not executing in dependency order
+  - Many other improvements across the code and documentation that are not explicitly listed above   
+
+Changes in version 6.1.0
+------------------------
+  - Support for spatial point-region and MX-CIF quadtree indexes both filters and events
+  - Support for "cast" to take a date format expression
+  - Support for date-time "format" method to take a format expression
+  - Support for a new time-to-live data window for use with watermarks
+  - Support for all aggregation functions to receive a filter expression
+  - Minor change in default configuration: By default the "share-view" settings is now false and "configuration.getEngineDefaults().getViewResources().setShareViews(false)" is the default.
+
+Minor API Change:
+  - We have changed how to the statement object model SPI reflects indexes. This affected the following classes:
+    com.espertech.esper.client.soda.CreateIndexColumn (from the statement object model), columns are now expressions
+    com.espertech.esper.client.hook.VirtualDataWindowEventStartIndex (from the virtual data window SPI), fields are now expressions
+
+Bug fixes
+  - Fixed issue #71 OSGi Import-Package: org.slf4j is missed
+  - Fixed issue #74 Broken link to configuration schema
+  - Fixed issue #76 Inheritance of avro events fails unpredictably
+  - Fixed issue TBQ-406-26288 Crontab non-sensible schedule causes hang
+  - Fixed issue NEA-374-86427 Inbound pool event processing exception not handled by custom ExceptionHandler
+  - Fixed issue UEJ-229-28464 similar pattern with repeat not firing
+  - Fixed issue CWV-630-11507 Explicit indexes cause extraneous calls to validateCompileExplicitIndex
+  - Fixed issue RYX-964-66911 NullpointerException query INNER JOIN without ON
+  - Many other improvements across the code and documentation that are not explicitly listed above
+
+Changes in version 6.0.1
+------------------------
+  - Requires Java 8
+  - The following dependent jar files are upgraded:
+    - ANTLR runtime library version is now 4.5.3 (antlr-runtime-4.5.3.jar) (previously antlr-runtime-4.3.jar)
+    - CGLIB version is now 3.2.4 (cglib-nodep-3.2.4.jar) (previously cglib-nodep-3.1.jar)
+    - SLF4J is now required (slf4j-api-1.7.21.jar) (commons-logging is no longer used) (optionally use with Log4J by adding slf4j-log4j12-1.7.21.jar)
+  - Support for subqueries to use a having-clause
+  - Support for Avro
+  - Support for passing transient objects as part of configuration, for extensions that rely on injected objects
+  - Support for view parameters to originate from context-provided properties
+  - Support for overlapping and non-overlapping contexts without terminating condition, i.e. "create context PerSession initiated by SessionEvent" making "terminated by" optional.
+  - Support for microsecond unit of time, allowing application to run either at millisecond and microsecond resolution; added new keywords "microseconds", "microsecond", "usec"
+  - Support for deployment API to by default atomically deploy and undeploy all statements without the need to take an explicit lock; support for providing a timeout and backoff strategy
+  - Support for user-defined functions to return EventBean-typed values
+  - Support for scripts to return EventBean-typed values
+  - Support for method invocation joins to call script and UDFs and to accept EventBean-typed values
+  - Support for contained-event expressions to accept EventBean-typed values returned by the expression
+  - Support for dataflow operator arguments to accept variables as part of the expression
+  - Support for filter optimization to recognize "in"-keywords when used with array, map or Collection-type values
+  - Support for plugging-in a provider for class-for-classname and classloader
+  - Support for views to use #-syntax instead of namespace:name, i.e. "MyEvent#time(30)", and for views to have no parenthesis for empty parameter list
+  - Support for multiple unidirectional streams for full outer joins
+  - Support for Java-8 ZonedDateTime and LocalDateTime
+  - New EsperIO Kafka input and output adapter
+  - Many other improvements across the code and documentation that are not explicitly listed above
+  
+Version 6.0.1 API and EPL Backwards-Incompatible changes:
+  - The @EventRepresentation annotation changed: it now takes a default parameter i.e. @EventRepresentation(map)
+  - Minor change in behavior in respect to Object-array event types: When inserting a single column into an existing Object-array event type the engine would allow that column to become the property of a Object-array fragment, which was inconsistent with other types
+  - Minor change to client API in CurrentTimeEvent to support microseconds: Rename of field "timeInMilliseconds" and CurrentTimeSpanEvent to "targetTime"
+  - Minor change to deployment API EPDeploymentAdmin which now also declares InterruptedException and DeploymentLockException to indicate when a lock cannot be taken
+  - Minor change to packages for classes in EsperIO CSV+File adapter: classes moved to "com.espertech.esperio.csv" and "com.espertech.esperio.file".
+  - Minor change to packages for classes in EsperIO JMS adapter: classes moved to "com.espertech.esperio.jms"
+  
+Bug fixes
+  - Fixed issue #55 NPE thrown in pattern that has a function with a subselect with select-star in an atom filter
+  - Fixed issue #61 Variable value null for filter boolean expression
+  - Fixed issue #62 Warning logged re. IllegalArgumentException when undeploying module using context variables
+  - Fixed issue #65 Cannot set enum variables that contain methods
+  - Fixed issue QGZ-934-29530 NPE casting null constant to type using 'cast(null, type)'
+  - Fixed issue FEH-558-71216 NullPointerException thrown during Single Row Function invocation passing invocation context when eligible for filter optimizations  
+  - Fixed issue FIP-509-17859 NPE thrown context-event props used in output rate crontab
+  - Fixed issue CUI-623-48365 Partitioned-context with null-value key not processing events
+  - Fixed issue FHX-177-20419 Wrapper underlying EventBean has incorrect associated type for single-column select conversion
+  - Fixed issue SIP-889-27087 Unparsable for JavaScript script with single-quote in a commented line
+  - Fixed issue ZBL-605-95607 Event matches twice when filter has an 'or' and when used with contexts causing duplicate delivery or stack overflow
+
+Changes in version 6.0.0
+------------------------
+  - Same as 6.0.1, with the exception of SIP-889-27087 and ZBL-605-95607
+
+Changes in version 5.5.0
+------------------------
+  - Support for methods that take varargs (methods that take an arbitrary number of values as parameters)
+  - Support for subscribers to receive the EPStatement instance as a parameter
+  - Support for configuring the size of the declared-expression value cache
+  - Improved support for extensions for XML schema events
+  - Added .NET NEsper -specific documentation, see appendixes
+  - Many other improvements across the code and documentation
+
+Bug fixes
+  - Fixed issue OUY-825-59339 enumeration-intersection between string-array throws exception
+  - Fixed issue UBY-248-57701 create-expression of javascript with array init causes parse exception
+  - Fixed issue ESC-000-00001 stack overflow creating isolated pattern statement, partially completing pattern and un-isolating stmt
+  - Fixed issue ESC-000-00002 grouped-window grouping parameter as datetime method nets property access exception
+  - Fixed issue ESC-000-00003 potential deadlock in consumer dispatch for context-partitioned named windows
+  - Fixed issue ESC-000-00004 possible concurrent modification in update-istream
+  - Fixed issue ESC-000-00005 category-context with boolean-expr compile NPE
+  - Fixed issue Github#45 enum named after reserved keyword requires unescape class name
+
+Changes in version 5.4.0
+------------------------
+  - Support for exception handler to receive a callback when an exception occurs during stop of an statement agent instance
+  - Support for configuring annotation-only imports and for implicit conversion for enumeration values
+  - Support for AMQP sink emitter to send header map
+
+Bug fixes and other improvements
+  - Fixed issue IZJ-256-61200 @audit for grouped window with intersection  
+  - Fixed issue DXR-616-21577 context partioned on-trigger no using right premade named window instance lock
+  - Fixed issue VNB-780-39427 exception cleanup incomplete when unexpected exception during compile and may leave resources referenced
+  - Fixed issue XRX-507-66275 declaredexpr in filter with contextpartition causes NPE
+  - Fixed issue GAM-776-53476 load context partition initializes pattern twice
+  - Fixed issue MIO-528-12756 ArrayIndexOutOfBoundException in match-recognize for define-clause with enumeration method on group variable
+  - Fixed issue SEK-319-56385 failed to resolve method invocation when prefixed by stream name for named window filter
+  - Fixed issue LAW-104-94306 ArrayIndexOutOfBoundsException for single-row-udf with filter-optimizable flag in pattern filter accepting properties of pattern-state results
+  - Fixed issue Github#24 NullPointerException for filter with global expression in context-partitioned stmt
+  - Fixed issue Github#26 NullPointerException with wrong On-select syntax
+  - Fixed issue Github#27 joining two named windows when using multiple thread and where both windows use "std:unique" produces incorrect results
+  - Fixed issue Github#29 StackOverflowError when processing named window insert large batch
+  - Fixed issue Github#31 Expression with bracket-syntax table access causes string constant validation exception
+  - Fixed issue Github#32  Incorrect result for aggregation when multiple agg functions in same statement each take a declared expression as parameter
+  - Fixed issue Github#33 NullPointerException with non-aggregated `having` clause and addListenerWithReplay
+  - Fixed issue Github#34 minor textual comment UTF-8 fix breaks build on some platforms
+  - Fixed issue Github#36 terminal-service build issue with Maven minor pom change
+  - Fixed issue Github#38 Benchmark scripts have incorrect Java classpaths
+  - Fixed issue Github#41 Prior function does not accept constant variable
+  - Fixed issue Github#42 BeanEventType call to FastClass.create() for OSGI improvement
+  - Fixed issue Github#43 esperio socket exports and bundle versions
+
+Changes in version 5.3.0
+------------------------
+  - Support for match recognize to have a maximum state count
+  - Support for output rate limiting hints
+  - Support for filter expression rewrite hint
+  - Support for stateless statements to have no listener dispatch or insert into latches
+  - Support for configuring an engine-wide default time zone
+  - Support for insert-into into a stream without any properties to use a select-clause that selects only "null"
+  - Many other improvements across the code and documentation that are not explicitly listed above
+
+Bug fixes and other improvements
+  - Fixed issue Github#5 Problem parsing "09" as number
+  - Fixed issue Github#20 BigDecimal coercing divider not using math context when provided
+  - Fixed issue Github#21 Concat expression not thread safe
+  - Fixed issue RPK-972-99663 create-variable with context not releasing variable on undeploy with deployment admin
+  - Fixed issue GOH-206-36441 aggregated with grouped and having clause incorrect result for non-join and join
+  - Fixed issue KKL-270-99184 variable with dot-method not current value when used from separate thread
+  - Fixed issue PJJ-142-58829 bad error message for property-not-found and enum method
+
 Changes in version 5.2.0
 ------------------------
   - Support for aggregation functions to specify the level of grouping in the parameter list, removing the need for separate subqueries for many use cases
@@ -65,7 +257,7 @@ Bug fixes and other improvements
 Changes in version 5.0.0
 ------------------------
   - The following dependent jar files are upgraded:
-       - ANTLR runtime library version is now 4.1 (antlr-runtime-4.1.jar) (previously antlr-runtime-3.2.jar)
+       - ANTLR runtime library version is now 4.1 (antlr-runtime-4.5.3.jar) (previously antlr-runtime-3.2.jar)
        - CGLIB version is now 3.1 (cglib-nodep-3.1.jar) (previously cglib-nodep-2.2.jar)
        - Commons-logging version is now 1.1.3 (commons-logging-1.1.3.jar) (previously commons-logging-1.1.1.jar)
        - (optionally) Log4j version is now 1.2.17 (log4j-1.2.17.jar) (previously log4j-1.2.16.jar)
@@ -371,7 +563,7 @@ Changes in version 4.3.0
 ------------------------
 Major API or EPL changes
   - We have made a change to NULL-value comparison, to closely follow SQL standards, as follows: In version 4.3, the expression "property = NULL" always returns null, use "property is NULL" instead. Version 4.2 and earlier returned true/false.
-    For more information, please see http://jira.codehaus.org/browse/ESPER-569
+    For more information, please see ESPER-569
   - Support for filter expressions as part of aggregation functions, for example "select count(*, color='black'), count(*) as percentBlack from Marbels"  
   - Support for interval algebra methods, e.g. before, after, coincides, during, includes, meets etc.
   - Support for a new expression-driven data window "win:expr". Use for dynamically shrinking and expanding time or length windows, or for custom expiry logic based on work days, for example.    
@@ -712,8 +904,7 @@ Changes in version 3.0.0
 ------------------------
 
 Major API changes
-  - Please see http://docs.codehaus.org/display/ESPER/Migrating+Esper+2.x+to+3.0  
-    The summary of changes are:
+  - The summary of changes are:
     - Upgraded version of dependent jar files 
     - Moved EventType, EventBean and related exception classes from package com.espertech.esper.event to com.espertech.esper.client
     - Several minor rename of methods in the Configuration API related to event type name retiring "alias" as a word in method names
@@ -911,7 +1102,7 @@ Major API changes
   - All package names have changed from "net.esper" to "com.espertech.esper"
   - We have renamed EQL to EPL: All method names and other references to EQL have been renamed to EPL, i.e. createEQL to createEPL
   - We have made changes to engine output to make the output more useful and consistent between different types of queries, 
-    and to make the engine more performant. Please see http://docs.codehaus.org/display/ESPER/Migrating+Esper+1.x+to+Esper+2.x for details.
+    and to make the engine more performant.
   - We have upgraded 3rd party library dependencies to new versions
   - We have switched the schema to 2.0, made it namespace-aware and available online
 
